@@ -24,12 +24,6 @@ for root, dirs, files in os.walk('known'):
         my_face_encodings.append(face_recognition.face_encodings(image)[0])
         image_names.append(f.split('.')[0])
 
-# Initialize some variables
-face_locations = []
-face_encodings = []
-face_names = []
-process_this_frame = True
-
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
@@ -37,24 +31,20 @@ while True:
     # Resize frame of video to 1/4 size for faster face recognition processing
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-    # Only process every other frame of video to save time
-    if process_this_frame:
-        # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(small_frame)
-        face_encodings = face_recognition.face_encodings(small_frame, face_locations)
+    # Find all the faces and face encodings in the current frame of video
+    face_locations = face_recognition.face_locations(small_frame)
+    face_encodings = face_recognition.face_encodings(small_frame, face_locations)
 
-        face_names = []
-        for face_encoding in face_encodings:
-            # See if the face is a match for the known face(s)
-            match = face_recognition.compare_faces(my_face_encodings, face_encoding)
-            if not any(match):
-                name = "Unknown"
-            else:
-                name = image_names[match.index(True)]
+    face_names = []
+    for face_encoding in face_encodings:
+        # See if the face is a match for the known face(s)
+        match = face_recognition.compare_faces(my_face_encodings, face_encoding)
+        if not any(match):
+            name = "Unknown"
+        else:
+            name = image_names[match.index(True)]
 
-            face_names.append(name)
-
-    process_this_frame = not process_this_frame
+        face_names.append(name)
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
