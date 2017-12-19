@@ -2,3 +2,6 @@
 __pycache__
 yoyo.*
 *.pyc
+*.model
+*/images/*
+plot.png
